@@ -10,41 +10,42 @@ from boto3.dynamodb.conditions import Key, Attr
 SKILL_CONFIGS = \
 {
     'ConfuciusSays': {
-        'spoken_name': 'Confucius Says',
-        'usage_text':  'invoke me by saying say something profound',
-        'ending_text': 'Confucius Says you are now more wise.',
-        'card_title':  'Confucius Says these wise words',
+        'spokenName': 'Confucius Says',
+        'usageText':  'invoke me by saying say something profound.',
+        'endingText': 'Confucius Says you are now wiser.',
+        'cardTitle':  'Confucius Says these wise words.',
         'intent':      'GetConfucius',
         'version':     1.1,
     },
     'BossyBoots': {
-        'spoken_name': 'Bossy Boots',
-        'usage_text':  "invoke me by saying tell me what's up",
-        'ending_text': 'Bossy Boots says you are welcome.',
-        'card_title':  "Bossy Boots tells you what's up",
+        'spokenName': 'Bossy Boots',
+        'usageText':  "invoke me by saying tell me what's up.",
+        'endingText': 'Bossy Boots says you are welcome.',
+        'cardTitle':  "Bossy Boots tells you what's up.",
         'intent':      'BeBossed',
         'version':     1.0,
     },
     'DebbieDowner': {
-        'spoken_name': 'Debbie Downer',
-        'usage_text':  'invoke me by saying how are you?',
-        'ending_text': "Debbie Downer isn't sure how, but try to have a nice day.",
-        'card_title':  'Debbie Downer feins a smile.',
+        'spokenName': 'Debbie Downer',
+        'usageText':  'invoke me by saying how are you?',
+        'endingText': "Debbie Downer isn't sure how, but try to have a nice day.",
+        'cardTitle':  'Debbie Downer feins a smile.',
         'intent':      'GetDown',
         'version':     1.0,
     },
     'RomanticRobot': {
-        'spoken_name': 'Romantic Robot',
-        'usage_text':  'invoke me by saying whisper sweet nothings.',
-        'ending_text': 'Romantic Robot has closed the connection.',
-        'card_title':  'You are now connected to Romantic Robot',
+        'spokenName': 'Romantic Robot',
+        'usageText':  'invoke me by saying whisper sweet nothings.',
+        'endingText': 'Romantic Robot has closed the connection.',
+        'cardTitle':  'You have established connection to Romantic Robot.',
         'intent':      'BeRomanced',
         'version':     1.0,
     },
 }
 
 ALEXA_SDK_REGION = 'us-east-1'
-
+SKILLS_DB = 'AlexaSkillSayings'
+CONFIG_DB = 'AlexaSkillConfigs'
 
 # --------------- Helpers that build all of the responses ----------------------
 
@@ -84,8 +85,8 @@ def get_welcome_response():
 
     session_attributes = {}
     card_title = "Welcome"
-    usage_output = getConfig()['usage_text']
-    speech_output = getConfig()['spoken_name'] + " " + usage_output
+    usage_output = getConfig()['usageText']
+    speech_output = getConfig()['spokenName'] + " " + usage_output
     reprompt_text = usage_output
     should_end_session = False
     speechlet_response = build_speechlet_response(card_title, speech_output, reprompt_text, should_end_session)
@@ -94,7 +95,7 @@ def get_welcome_response():
 
 def handle_session_end_request():
     card_title = "Session Ended"
-    speech_output = getConfig()['ending_text']
+    speech_output = getConfig()['endingText']
     # Setting this to true ends the session and exits the skill.
     should_end_session = True
     return build_response({}, build_speechlet_response(card_title, speech_output, None, should_end_session))
@@ -102,26 +103,10 @@ def handle_session_end_request():
 
 def get_card_data_dynamo(intent, session):
     session_attributes = {}
-    card_title = getConfig()['card_title']
+    card_title = getConfig()['cardTitle']
     reprompt_text = ""
     should_end_session = True
-
-    session = boto3.Session() ### use this one in production
-    #session = boto3.Session(region_name=ALEXA_SDK_REGION)
-    #session = boto3.Session(profile_name='bob.brandt') ### use this one for local testing
-    dynamodb = session.resource('dynamodb')
-    table = dynamodb.Table('AlexaSkillSayings')
-    
-    response = table.query(
-        KeyConditionExpression=Key('Skill').eq(getConfig()['skill_name'])
-    )
-    
-    sayingsList = []
-    for respItem in response['Items']:
-        saying = respItem['Saying']
-        sayingsList.append(saying)
-
-    saying = random.choice(sayingsList)
+    saying = random.choice(getSayings())
     speech_output = "%s" % (saying)
 
     return build_response(session_attributes, build_speechlet_response(card_title, speech_output, reprompt_text, should_end_session))
@@ -177,25 +162,21 @@ def on_session_ended(session_ended_request, session):
     # add cleanup logic here
 
 
+
+_APP_ID = None # this must be set before getConfig() is called
+
 # --------------- Main handler ------------------
 
 def lambda_handler(event, context):
     """
     Route the incoming request based on type (LaunchRequest, IntentRequest, etc.) The JSON body of the request is provided in the event parameter.
     """
-    global SKILL
+    global _APP_ID
     session = event['session']
-    appID = session['application']['applicationId']
-    print("event.session.application.applicationId=" + appID)
+    _APP_ID = session['application']['applicationId']
+    print("event.session.application.applicationId=" + _APP_ID)
 
-    skillsMap = {
-        'amzn1.ask.skill.a4d4a968-e240-46a6-94c0-35142f537381':'ConfuciusSays',
-        'amzn1.ask.skill.a4d4a968-e240-46a6-94c0-35142f537382':'BossyBoots',
-        'amzn1.ask.skill.a4d4a968-e240-46a6-94c0-35142f537383':'DebbieDowner',
-        'amzn1.ask.skill.a4d4a968-e240-46a6-94c0-35142f537384':'RomanticRobot',
-        }
-    SKILL = skillsMap.get(appID, None)
-    if (SKILL is None):
+    if getConfig() is None:
         raise ValueError("Invalid Application ID")
     
     if session['new']:
@@ -210,10 +191,82 @@ def lambda_handler(event, context):
         return on_session_ended(request, session)
 
 
+_CONFIG = None
+_SAYINGS = None
+_SESSION = None
+
+def __getSession():
+    '''
+    internal helper, need to switch config in test vs. production
+    '''
+    global _SESSION
+    if _SESSION is not None:
+        return _SESSION
+#    session = boto3.Session()
+    #session = boto3.Session(region_name=ALEXA_SDK_REGION)
+    session = boto3.Session(profile_name='bob.brandt')
+    _SESSION = session
+    return _SESSION
+
+
 def getConfig():
     '''
     return config data for this skill, will throw if the skill isn't mapped in the config
+    counts on _APP_ID having already been set
     '''
-    cfg = SKILL_CONFIGS[SKILL]
-    cfg['skill_name'] = SKILL
-    return cfg
+    global _CONFIG
+    if _CONFIG:
+        return _CONFIG
+    session = __getSession()
+    client = session.client('dynamodb')
+    response = client.scan(
+        TableName=CONFIG_DB,
+        AttributesToGet=['Skill','config'],
+    )
+    for respItem in response['Items']:
+        cfg = respItem['config']['M']
+        if cfg['appId']['S'] == _APP_ID:
+            cleanCfg = {}
+            cfgParams = [
+                'spokenName',
+                'usageText',
+                'endingText',
+                'cardTitle',
+                'intent',
+                'version']
+            for k in cfgParams:
+                cleanCfg[k] = cfg[k]['S']
+            cleanCfg['skillName']  = respItem['Skill']['S']
+            _CONFIG = cleanCfg
+            break
+    return _CONFIG
+
+def _clearCache():
+    '''
+    just for testing purposes
+    '''
+    global _CONFIG, _SAYINGS
+    _CONFIG = None
+    _SAYINGS = None
+    
+
+def getSayings():
+    '''
+    return all sayings for the invoked skill
+    '''
+    global _SAYINGS
+    if _SAYINGS is not None:
+        return _SAYINGS
+    session = __getSession()
+    dynamodb = session.resource('dynamodb')
+    table = dynamodb.Table(SKILLS_DB)
+    response = table.query(
+        KeyConditionExpression=Key('Skill').eq(getConfig()['skillName'])
+    )
+    
+    sayingsList = []
+    for respItem in response['Items']:
+        saying = respItem['Saying']
+        sayingsList.append(saying)
+    _SAYINGS = sayingsList
+    return _SAYINGS
