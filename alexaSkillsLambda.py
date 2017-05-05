@@ -7,42 +7,6 @@ import boto3
 from boto3.dynamodb.conditions import Key, Attr
 
 
-SKILL_CONFIGS = \
-{
-    'ConfuciusSays': {
-        'spokenName': 'Confucius Says',
-        'usageText':  'invoke me by saying say something profound.',
-        'endingText': 'Confucius Says you are now wiser.',
-        'cardTitle':  'Confucius Says these wise words.',
-        'intent':      'GetConfucius',
-        'version':     1.1,
-    },
-    'BossyBoots': {
-        'spokenName': 'Bossy Boots',
-        'usageText':  "invoke me by saying tell me what's up.",
-        'endingText': 'Bossy Boots says you are welcome.',
-        'cardTitle':  "Bossy Boots tells you what's up.",
-        'intent':      'BeBossed',
-        'version':     1.0,
-    },
-    'DebbieDowner': {
-        'spokenName': 'Debbie Downer',
-        'usageText':  'invoke me by saying how are you?',
-        'endingText': "Debbie Downer isn't sure how, but try to have a nice day.",
-        'cardTitle':  'Debbie Downer feins a smile.',
-        'intent':      'GetDown',
-        'version':     1.0,
-    },
-    'RomanticRobot': {
-        'spokenName': 'Romantic Robot',
-        'usageText':  'invoke me by saying whisper sweet nothings.',
-        'endingText': 'Romantic Robot has closed the connection.',
-        'cardTitle':  'You have established connection to Romantic Robot.',
-        'intent':      'BeRomanced',
-        'version':     1.0,
-    },
-}
-
 ALEXA_SDK_REGION = 'us-east-1'
 SKILLS_DB = 'AlexaSkillSayings'
 CONFIG_DB = 'AlexaSkillConfigs'
@@ -202,9 +166,9 @@ def __getSession():
     global _SESSION
     if _SESSION is not None:
         return _SESSION
-#    session = boto3.Session()
+    session = boto3.Session()
     #session = boto3.Session(region_name=ALEXA_SDK_REGION)
-    session = boto3.Session(profile_name='bob.brandt')
+    #session = boto3.Session(profile_name='bob.brandt')
     _SESSION = session
     return _SESSION
 
