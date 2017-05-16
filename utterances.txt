@@ -1,0 +1,69 @@
+Testing Instructions: This skill does nothing more than what it says on the tin. It's simple request/response.
+
+
+GetConfucius something profound
+GetConfucius something wise
+GetConfucius something asinine
+GetConfucius say something profound
+GetConfucius say something wise
+GetConfucius say something asinine
+GetConfucius tell me something profound
+GetConfucius tell me something wise
+GetConfucius tell me something asinine
+GetConfucius what does Confucius think
+GetConfucius what does Confucius say
+
+Alexa, ask Confucius Says to say something profound.
+Alexa, ask Confucius Says to tell me something wise.
+Alexa, ask Confucius Says what does Confucius say.
+
+Description: Produces a bogus yet profound quote from someone who may or may not have been Confucius.
+
+
+BeBossed tell me what's up
+BeBossed tell me what to do
+BeBossed tell me what's going on
+BeBossed tell me what's on your mind
+BeBossed tell me what I should do
+BeBossed what should I do
+BeBossed for my orders
+BeBossed I am reporting for duty
+
+Alexa, ask Bossy Boots to tell me what to do
+Alexa, ask Bossy Boots for my orders
+Alexa, ask Bossy Boots I am reporting for duty
+
+Description: Do you miss your mother? Are you feeling subordinate? This goof app will have Alexa boss you around. But you should call your mother, too.
+
+
+GetDown for the news
+GetDown for the news today
+GetDown what she thinks
+GetDown what's up
+GetDown for her perspective
+GetDown to turn that frown upside down
+GetDown to keep her chin up
+
+Alexa, ask Debbie Downer to turn that frown upside down
+Alexa, ask Debbie Downer to keep her chin up
+Alexa, ask Debbie Downer for the news today
+
+Description: We each have a person in our life who has a fairly negative perspective. This goof skill will have Alexa also be that person for you.
+
+
+BeRomanced to give me love advice
+BeRomanced for love advice
+BeRomanced to tell me about love
+BeRomanced if it will marry me
+BeRomanced to be my valentine
+BeRomanced to go to prom with me
+BeRomanced to be my lover
+BeRomanced to be my boyfriend
+BeRomanced to be my girlfriend
+
+
+Alexa, ask Romantic Robot for love advice
+Alexa, ask Romantic Robot to be my valentine
+Alexa, ask Romantic Robot to be my lover
+
+Description: Alexa is there for you if you are feeling lonely or want to learn all there is to know about love.

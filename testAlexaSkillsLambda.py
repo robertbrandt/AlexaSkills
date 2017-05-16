@@ -28,9 +28,9 @@ def test():
 
     testCases = [
         ( 'amzn1.ask.skill.a4d4a968-e240-46a6-94c0-35142f537381', 'GetConfucius' ),
-        ( 'amzn1.ask.skill.a4d4a968-e240-46a6-94c0-35142f537382', 'BeBossed' ),
-        ( 'amzn1.ask.skill.a4d4a968-e240-46a6-94c0-35142f537383', 'GetDown' ),
-        ( 'amzn1.ask.skill.a4d4a968-e240-46a6-94c0-35142f537384', 'BeRomanced' ),
+        ( 'amzn1.ask.skill.b60263d7-fbcd-431c-a0db-048a9dfd9cf7', 'BeBossed' ),
+        ( 'amzn1.ask.skill.adda0355-c10a-4714-b80a-3d2d0064ecb0', 'GetDown' ),
+        ( 'amzn1.ask.skill.97035895-5140-4628-8b62-37e33e00d10b', 'BeRomanced' ),
         ]
     for case in testCases:
         request = requestTemplate

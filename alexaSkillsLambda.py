@@ -106,8 +106,11 @@ def on_intent(intent_request, session):
     intent = intent_request['intent']
     intent_name = intent_request['intent']['name']
 
+    myIntent = getConfig()['intent']
+    print("comparing '%s' to '%s'." % (intent_name, myIntent))
+    
     # Dispatch to your skill's intent handlers
-    if intent_name == getConfig()['intent']:
+    if intent_name == myIntent:
         return get_card_data_dynamo(intent, session)
     elif intent_name == "AMAZON.HelpIntent":
         return get_welcome_response()
