@@ -158,22 +158,14 @@ def lambda_handler(event, context):
         return on_session_ended(request, session)
 
 
-_CONFIG = None
-_SAYINGS = None
-_SESSION = None
-
 def __getSession():
     '''
     internal helper, need to switch config in test vs. production
     '''
-    global _SESSION
-    if _SESSION is not None:
-        return _SESSION
     session = boto3.Session()
     #session = boto3.Session(region_name=ALEXA_SDK_REGION)
     #session = boto3.Session(profile_name='bob.brandt')
-    _SESSION = session
-    return _SESSION
+    return session
 
 
 def getConfig():
@@ -181,9 +173,6 @@ def getConfig():
     return config data for this skill, will throw if the skill isn't mapped in the config
     counts on _APP_ID having already been set
     '''
-    global _CONFIG
-    if _CONFIG:
-        return _CONFIG
     session = __getSession()
     client = session.client('dynamodb')
     response = client.scan(
@@ -204,26 +193,13 @@ def getConfig():
             for k in cfgParams:
                 cleanCfg[k] = cfg[k]['S']
             cleanCfg['skillName']  = respItem['Skill']['S']
-            _CONFIG = cleanCfg
-            break
-    return _CONFIG
+            return cleanCfg
 
-def _clearCache():
-    '''
-    just for testing purposes
-    '''
-    global _CONFIG, _SAYINGS
-    _CONFIG = None
-    _SAYINGS = None
-    
 
 def getSayings():
     '''
     return all sayings for the invoked skill
     '''
-    global _SAYINGS
-    if _SAYINGS is not None:
-        return _SAYINGS
     session = __getSession()
     dynamodb = session.resource('dynamodb')
     table = dynamodb.Table(SKILLS_DB)
@@ -235,5 +211,4 @@ def getSayings():
     for respItem in response['Items']:
         saying = respItem['Saying']
         sayingsList.append(saying)
-    _SAYINGS = sayingsList
-    return _SAYINGS
+    return sayingsList

@@ -37,7 +37,6 @@ def test():
         request['session']['application']['applicationId'] = case[0]
         request['request']['intent']['name'] = case[1]
         print(alexaSkillsLambda.lambda_handler(request,None))
-        alexaSkillsLambda._clearCache()
     #print(alexaSkillsLambda.get_card_data_dynamo(None, None))
 
 if __name__ == '__main__':
